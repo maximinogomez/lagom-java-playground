@@ -49,7 +49,7 @@ jobs:
               export PATH=./apache-maven-3.5.3/bin:$PATH
               echo $PATH
               apache-maven-3.5.3/bin/mvn -v
-              apache-maven-3.5.3/bin/mvn compile -s settings.xml
+              apache-maven-3.5.3/bin/mvn compile
       - run:
           name: run api-tests
           working_directory: ~/repo/api-integration-tests

@@ -1,61 +1,23 @@
-# Java Maven CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-java/ for more details
-#
-version: 2
-jobs:
-  build:
-    docker:
-      # specify the version you desire here
-      - image: circleci/openjdk:8-jdk
-
-    working_directory: ~/repo
-
-    environment:
-      # Customize the JVM maximum heap limit
-      MAVEN_OPTS: -Xmx3200m
-
-    steps:
-      - checkout
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "pom.xml" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-
-      #- run: mvn dependency:go-offline
-
-      - save_cache:
-          paths:
-            - ~/.m2
-          key: v1-dependencies-{{ checksum "pom.xml" }}
-
-      - run: mvn compile
-
-      # run tests!
-      #- run: mvn integration-test
-  apitest:
-    docker:
-      - image: circleci/openjdk:8-jdk
-
-    working_directory: ~/repo
-
-    environment:
-      MAVEN_OPTS: -Xmx3200m
-
-    steps:
-      - attach_workspace:
-          at: ~/repo
-      - run:
-          name: clone engage-tests
+--- 
+jobs: 
+  apitest: 
+    docker: 
+      - 
+        image: "circleci/openjdk:8-jdk"
+    environment: 
+      MAVEN_OPTS: "-Xmx3200m"
+    steps: 
+      - 
+        at: ~/repo
+        attach_workspace: ~
+      - 
+        run: 
           command: |
               mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
-              git clone -b master git@github.com:PivotusVentures/engage-tests.git
-      - run:
-          name: compile api-tests
-          working_directory: ~/repo/engage-tests/api-tests
+              git clone -b master git@github.com/maximinogomez/api-integration-tests.git
+          name: "clone api-integration-tests"
+      - 
+        run: 
           command: |
               echo "configuring workspace"
               curl -O http://apache.spinellicreations.com/maven/maven-3/3.5.3/binaries/apache-maven-3.5.3-bin.zip
@@ -65,16 +27,39 @@ jobs:
               echo $PATH
               apache-maven-3.5.3/bin/mvn -v
               apache-maven-3.5.3/bin/mvn compile -s settings.xml
-      - run:
-          name: run api-tests
-          working_directory: ~/repo/engage-tests/api-tests
-          command: |
-
-              apache-maven-3.5.3/bin/mvn -B -s ./settings.xml test -Denvironment=plat
-workflows:
-  version: 2
-  build_test:
-    jobs:
+          name: "compile api-tests"
+          working_directory: ~/repo/api-integration-tests
+      - 
+        run: 
+          command: "apache-maven-3.5.3/bin/mvn -B -s ./settings.xml test -Denvironment=plat\n"
+          name: "run api-tests"
+          working_directory: ~/repo/api-integration-tests
+    working_directory: ~/repo
+  build: 
+    docker: 
+      - 
+        image: "circleci/openjdk:8-jdk"
+    environment: 
+      MAVEN_OPTS: "-Xmx3200m"
+    steps: 
+      - checkout
+      - 
+        restore_cache: 
+          keys: 
+            - "v1-dependencies-{{ checksum \"pom.xml\" }}"
+            - v1-dependencies-
+      - 
+        save_cache: 
+          key: "v1-dependencies-{{ checksum \"pom.xml\" }}"
+          paths: 
+            - ~/.m2
+      - 
+        run: "mvn compile"
+    working_directory: ~/repo
+version: 2
+workflows: 
+  build_test: 
+    jobs: 
       - build
       - apitest
-
+  version: 2

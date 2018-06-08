@@ -37,8 +37,7 @@ jobs:
           working_directory: ~/repo
           command: |
             sudo apt-get install python3 -y
-            sudo apt-get install python3-pip -y
-            sudo pip install requests -y
+            sudo apt-get install python-pip -y
       - run:
           command: |
             export CIRCLE_TAG="ENV-PLAT"

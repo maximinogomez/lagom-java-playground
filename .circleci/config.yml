@@ -40,7 +40,7 @@ jobs:
           command: |
             sudo apt-get install python3 -y
             sudo apt-get install python-pip -y
-            sudo pip install requests -y
+            sudo pip install requests
             export CIRCLE_TAG="ENV-PLAT"
             pwd
             cd .circleci

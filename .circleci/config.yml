@@ -34,9 +34,11 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - run:
+          working_directory: ~/repo
           command: |
             sudo apt-get install python3 -y
             sudo apt-get install python3-pip -y
+            sudo pip install requests -y
       - run:
           command: |
             export CIRCLE_TAG="ENV-PLAT"

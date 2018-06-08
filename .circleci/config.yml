@@ -39,6 +39,7 @@ jobs:
             sudo apt-get install python3 -y
             sudo apt-get install python-pip -y
             export CIRCLE_TAG="ENV-PLAT"
+            pwd
             python3 .circleci/svs_api_status.py
       - run:
           name: clone api-integration-tests

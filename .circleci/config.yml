@@ -41,7 +41,7 @@ jobs:
             sudo apt-get install python-pip -y
             sudo pip install requests
             export CIRCLE_TAG="ENV-PLAT"
-            python3 ./circleci/svs_api_status.py
+            python3 .circleci/svs_api_status.py
       - run:
           name: clone api-integration-tests
           command: |

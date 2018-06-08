@@ -31,10 +31,10 @@ jobs:
     environment:
       MAVEN_OPTS: -Xmx3200m
     steps:
+      - checkout
       - attach_workspace:
           at: ~/repo
       - run:
-          working_directory: ~/repo
           command: |
             sudo apt-get install python3 -y
             sudo apt-get install python-pip -y

@@ -36,7 +36,7 @@ jobs:
       - run:
           command: |
             sudo apt-get install python3 -y
-            sudo apt-get install python3-setuptools & sudo easy_install3 pip
+            sudo apt-get install python3-pip -y
       - run:
           command: |
             export CIRCLE_TAG="ENV-PLAT"

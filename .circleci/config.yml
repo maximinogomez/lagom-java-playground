@@ -40,8 +40,9 @@ jobs:
             sudo apt-get install python-pip -y
             export CIRCLE_TAG="ENV-PLAT"
             pwd
-            ls
-            python3 .circleci/svs_api_status.py
+            cd .circleci
+            pwd
+            python3 svs_api_status.py
       - run:
           name: clone api-integration-tests
           command: |

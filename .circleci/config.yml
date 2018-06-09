@@ -50,7 +50,7 @@ jobs:
           name: clone api-integration-tests
           command: |
               mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
-              git clone sudo apt-get -y upgrade-b master git@github.com:maximinogomez/api-integration-tests.git
+              git clone -b master git@github.com:maximinogomez/api-integration-tests.git
       - run:
           name: compile api-tests
           working_directory: ~/repo/api-integration-tests

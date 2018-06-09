@@ -42,7 +42,8 @@ jobs:
             echo $PATH
             pip3 --version
             pip --version
-            pip install requests
+            echo $PATH
+            pip3 install requests
             export CIRCLE_TAG="ENV-PLAT"
             export TEST1="TEST1"
             python3 .circleci/svs_api_status.py

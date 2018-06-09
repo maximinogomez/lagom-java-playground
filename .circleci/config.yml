@@ -39,6 +39,9 @@ jobs:
           command: |
             sudo apt-get install python3 -y
             sudo apt-get install python3-pip -y
+            echo $PATH
+            pip3 --version
+            pip --version
             pip install requests
             export CIRCLE_TAG="ENV-PLAT"
             export TEST1="TEST1"

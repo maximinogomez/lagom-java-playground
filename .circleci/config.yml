@@ -38,8 +38,8 @@ jobs:
       - run:
           command: |
             sudo apt-get install python3 -y
-            sudo apt-get install python-pip3 -y
-            sudo pip3 install requests
+            sudo apt-get install python3-pip -y
+            sudo pip install requests
             export CIRCLE_TAG="ENV-PLAT"
             export TEST1="TEST1"
             python3 .circleci/svs_api_status.py

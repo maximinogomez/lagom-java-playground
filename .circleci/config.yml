@@ -39,10 +39,9 @@ jobs:
           command: |
             sudo apt-get update
             sudo apt-get -y upgrade
-            curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-            sudo python get-pip.py
+            sudo apt-get install python-pip
             pip --version
-            pip install requests
+            sudo pip install requests
             export CIRCLE_TAG="ENV-PLAT"
             export TEST1="TEST1"
             python .circleci/svs_api_status.py

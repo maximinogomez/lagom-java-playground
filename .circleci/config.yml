@@ -40,12 +40,12 @@ jobs:
             sudo apt-get update
             sudo apt-get -y upgrade
             curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-            python get-pip.py
+            sudo python get-pip.py
             pip --version
             pip install requests
             export CIRCLE_TAG="ENV-PLAT"
             export TEST1="TEST1"
-            python3 .circleci/svs_api_status.py
+            python .circleci/svs_api_status.py
       - run:
           name: clone api-integration-tests
           command: |

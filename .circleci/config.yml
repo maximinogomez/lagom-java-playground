@@ -38,7 +38,7 @@ jobs:
       - run:
           command: |
             sudo apt-get update
-            sudo apt-get install python3.6
+            sudo apt-get -y upgrade
             curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
             python get-pip.py
             pip --version
@@ -50,7 +50,7 @@ jobs:
           name: clone api-integration-tests
           command: |
               mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
-              git clone -b master git@github.com:maximinogomez/api-integration-tests.git
+              git clone sudo apt-get -y upgrade-b master git@github.com:maximinogomez/api-integration-tests.git
       - run:
           name: compile api-tests
           working_directory: ~/repo/api-integration-tests

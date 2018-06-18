@@ -124,6 +124,8 @@ def main():
             if trigger_ci_engage_deploy_job(env_name):
                 time.sleep(10)
                 start_api_checks(env_host_url, expected_build_number)
+            else:
+                print('Errors when triggering remote jenkins deploy job!')
 
 
 if __name__ == '__main__':

@@ -75,7 +75,7 @@ def trigger_ci_engage_deploy_job(env_name):
     jenkins_password = 'c30e09bc41d4b026d4fee885f95d9a6b'  # Change me!
 
     has_errors = False
-    if env_name in target_urls and target_urls[env_name] == 'plat':
+    if env_name in target_urls and env_name == 'plat':
         try:
             target_url = target_urls[env_name]
             response = requests_retry_session().post(target_url, auth=(jenkins_username, jenkins_password))
@@ -89,6 +89,9 @@ def trigger_ci_engage_deploy_job(env_name):
         except Exception as x:
             print('Request failed!')
             has_errors = True
+    else:
+        print('Remote jenkins deploy job not allow for env name: {0}'.format(env_name))
+        has_errors = True
     return has_errors
 
 
@@ -111,21 +114,20 @@ def main():
         env_name = to_env_name(os.environ['CIRCLE_TAG'])
         expected_build_number = os.environ['CIRCLE_SHA1'][0:10]
 
-        print("env name : {0}".format(env_name))
-        print("expected_build_number : {0}".format(expected_build_number))
-
         env_host_url = get_env_host_url(env_name)
-
-        print("env host url : {0}".format(env_host_url))
 
         if env_host_url == '':
             print('No host url found for env name: {0}'.format(env_name))
         else:
+            print("----- Env name : {0}".format(env_name))
+            print("----- Expected build number : {0}".format(expected_build_number))
+            print("----- Env host URL : {0}".format(env_host_url))
+
             if trigger_ci_engage_deploy_job(env_name):
                 time.sleep(10)
                 start_api_checks(env_host_url, expected_build_number)
             else:
-                print('Errors when triggering remote jenkins deploy job!')
+                print('----- API Status Checks did not ran due to errors when triggering remote jenkins deploy job!')
 
 
 if __name__ == '__main__':

@@ -105,13 +105,18 @@ def to_env_name(env_tag):
 
 
 def main():
-    env_tag_names = {'ENV-PLAT'}
+    accepted_env_tags = {'ENV-PLAT'}
 
-    if 'CIRCLE_TAG' in os.environ and os.environ['CIRCLE_TAG'] in env_tag_names:
+    if 'CIRCLE_TAG' in os.environ and os.environ['CIRCLE_TAG'] in accepted_env_tags:
         env_name = to_env_name(os.environ['CIRCLE_TAG'])
         expected_build_number = os.environ['CIRCLE_SHA1'][0:10]
 
+        print("env name : {0}".format(env_name))
+        print("expected_build_number : {0}".format(expected_build_number))
+
         env_host_url = get_env_host_url(env_name)
+
+        print("env host url : {0}".format(env_host_url))
 
         if env_host_url == '':
             print('No host url found for env name: {0}'.format(env_name))

@@ -43,7 +43,6 @@ jobs:
             pip --version
             sudo pip install requests
             export CIRCLE_TAG="ENV-PLAT"
-            export TEST1="TEST1"
             python .circleci/svs_api_status.py
       - run:
           name: clone api-integration-tests

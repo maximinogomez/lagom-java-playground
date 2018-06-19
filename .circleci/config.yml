@@ -39,6 +39,7 @@ jobs:
         - run:
             name: deploy to env status
             command: |
+              sudo pip install requests
               python .circleci/svs_api_status.py
 
   apitest:
@@ -81,4 +82,4 @@ workflows:
             - build
       - apitest:
           requires:
-            - build
+            - deploy_to_env

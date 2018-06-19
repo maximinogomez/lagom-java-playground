@@ -9,11 +9,11 @@ from requests.packages.urllib3.util.retry import Retry
 
 
 API_STATUS_PATHS = {
-    'users': '/api/users/status',
     'auth': '/api/auth/status',
-    'conversations': '/api/conversations/status',
+    'users': '/api/users/status',
+    'profiles': '/api/profiles/status',
     'notification': '/api/notification/status',
-    'profiles': '/api/profiles/status'
+    'conversations': '/api/conversations/status'
 }
 
 
@@ -42,28 +42,29 @@ def get_api_status(endpoint):
 
 
 def start_api_checks(host_url, expected_build_number):
-    print('*** Start API status checks deployed at [ {0} ] ***'.format(host_url))
+    print('***** Start API status checks deployed at [ {0} ]'.format(host_url))
 
     for k, v in API_STATUS_PATHS.items():
         api_response_values = get_api_status(host_url + v)
 
         if 'buildNumber' in api_response_values:
-            print('--- Endpoint: {0} \nStatus: {1}'
-                  .format(host_url, api_response_values['code']))
-            print('--- Artifact: {0} \nBuildNumber: {1}'
+            print('----- Endpoint: {0} Status: {1}'
+                  .format(host_url + v, api_response_values['code']))
+
+            print('----- Artifact: {0} BuildNumber: {1}'
                   .format(api_response_values['artifact'], api_response_values['buildNumber']))
 
             actual_build_number = api_response_values['buildNumber'][0:10]
             if actual_build_number == expected_build_number:
-                print('--- Expected build number [{0}] DID matched actual build number [{1}]'
+                print('----- Expected build number [{0}] DID matched response build number [{1}]'
                       .format(expected_build_number, actual_build_number))
             else:
-                sys.exit('--- Expected build number [{0}] DID NOT matched actual build number [{1}]'
+                sys.exit('--- Expected build number [{0}] DID NOT matched response build number [{1}]'
                          .format(expected_build_number, actual_build_number))
         else:
-            print('--- Response did not have a build number for Endpoint: {0} \nStatus: {1}'
+            print('----- Response did not have a build number for endpoint: {0} Status: {1}'
                   .format(host_url + v, api_response_values['code']))
-    print('*** End API status checks ***')
+    print('***** End API status checks.')
 
 
 def trigger_ci_deploy_job(env_name):

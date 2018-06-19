@@ -85,13 +85,13 @@ def trigger_ci_deploy_job(env_name):
             .post(env_name_to_build_url[env_name], auth=(jenkins_username, jenkins_password))
 
         if response.status_code == 201:
-            print('--- Remote jenkins job response status: {0}'.format(response.status_code))
+            print('----- Remote jenkins job response status: {0}'.format(response.status_code))
             return True
         else:
-            print('--- Remote jenkins job response status: {0}'.format(response.status_code))
+            print('----- Remote jenkins job response status: {0}'.format(response.status_code))
             return False
     else:
-        print('--- Remote jenkins deploy job not allow for env name: {0}'.format(env_name))
+        print('----- Remote jenkins deploy job not allow for env name: {0}'.format(env_name))
         return False
 
 

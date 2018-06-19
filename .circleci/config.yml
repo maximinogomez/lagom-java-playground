@@ -35,16 +35,16 @@ jobs:
       steps:
         - checkout
         - run:
-            name: deploy to env status
+            name: Deploy and check API's deployed to cluster environment
             command: |
               sudo pip install --upgrade pip
               sudo pip install requests
               export CIRCLE_TAG="ENV-PLAT"
               python .circleci/svs_api_status.py
 
-  apitest:
+  test_deployed_apis  :
     docker:
-      - image: circleci/openjdk:8-jdk
+      - image: circleci/openjdk:8-jdk-browsers
     working_directory: ~/repo
     environment:
       MAVEN_OPTS: -Xmx3200m
@@ -57,20 +57,7 @@ jobs:
               git clone -b master git@github.com:maximinogomez/api-integration-tests.git
       - run:
           name: compile api-tests
-          working_directory: ~/repo/api-integration-tests
-          command: |
-              echo "configuring workspace"
-              curl -O http://apache.spinellicreations.com/maven/maven-3/3.5.3/binaries/apache-maven-3.5.3-bin.zip
-              unzip apache-maven-3.5.3-bin.zip
-              echo $JAVA_HOME
-              export PATH=./apache-maven-3.5.3/bin:$PATH
-              echo $PATH
-              apache-maven-3.5.3/bin/mvn -v
-              apache-maven-3.5.3/bin/mvn compile
-      - run:
-          name: run api-tests
-          working_directory: ~/repo/api-integration-tests
-          command: apache-maven-3.5.3/bin/mvn test
+          command: mvn test
 
 workflows:
   version: 2
@@ -80,6 +67,6 @@ workflows:
       - deploy_to_env:
           requires:
             - build
-      - apitest:
+      - test_deployed_api:
           requires:
             - deploy_to_env

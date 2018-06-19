@@ -32,14 +32,14 @@ jobs:
       working_directory: ~/repo
       docker:
         - image: circleci/python:3.6.1
-          environment:
-                MAVEN_OPTS: "-Xms1024m -Xmx1024m"
       steps:
         - checkout
         - run:
             name: deploy to env status
             command: |
+              sudo pip install --upgrade pip
               sudo pip install requests
+              export CIRCLE_TAG="ENV-PLAT"
               python .circleci/svs_api_status.py
 
   apitest:
@@ -74,12 +74,15 @@ jobs:
 
 workflows:
   version: 2
-  build_test:
+  build_deploy_test:
     jobs:
       - build
       - deploy_to_env:
           requires:
             - build
+          filter:
+            tags:
+              only: /ENV-PLAT/
       - apitest:
           requires:
             - deploy_to_env

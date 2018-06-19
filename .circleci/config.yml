@@ -64,9 +64,5 @@ workflows:
   build_deploy_test:
     jobs:
       - build
-      - deploy_to_env:
-          requires:
-            - build
-      - test_deployed_api:
-          requires:
-            - deploy_to_env
+      - deploy_to_env
+      - test_deployed_api

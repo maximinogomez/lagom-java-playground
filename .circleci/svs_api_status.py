@@ -52,8 +52,6 @@ def get_api_status(endpoint):
 
 
 def start_api_checks(host_url, expected_build_number):
-    print('***** Start API status checks deployed at [ {0} ]'.format(host_url))
-
     for k, v in API_STATUS_PATHS.items():
         api_response_values = get_api_status(host_url + v)
 
@@ -72,9 +70,7 @@ def start_api_checks(host_url, expected_build_number):
                 sys.exit('----- Expected build number [{0}] DID NOT matched response build number [{1}]'
                          .format(expected_build_number, actual_build_number))
         else:
-            print('----- Response did not have a build number for endpoint: {0} Status: {1}'
-                  .format(host_url + v, api_response_values['code']))
-    print('***** End API status checks.')
+            sys.exit('----- Response from endpoint {0} did not return the build number!'.format(host_url + v))
 
 
 def trigger_ci_deploy_job(env_name):
@@ -124,8 +120,14 @@ def main():
 
             was_triggered_successful = trigger_ci_deploy_job(env_name)
             if was_triggered_successful:
-                time.sleep(10)
+                time.sleep(20)
+
+                print('***** Start API status checks deployed at [ {0} ]'.format(env_host_url))
+
                 start_api_checks(env_host_url, expected_build_number)
+
+                print('***** End API status checks.')
+
             else:
                 print('--- API status checks did not ran due to errors when triggering the remote jenkins job!')
         else:

@@ -42,7 +42,7 @@ jobs:
               export CIRCLE_TAG="ENV-PLAT"
               python .circleci/svs_api_status.py
 
-  test_deployed_apis  :
+  test_deployed_apis:
     docker:
       - image: circleci/openjdk:8-jdk-browsers
     working_directory: ~/repo

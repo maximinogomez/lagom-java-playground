@@ -80,9 +80,6 @@ workflows:
       - deploy_to_env:
           requires:
             - build
-          filter:
-            tags:
-              only: /ENV-PLAT/
       - apitest:
           requires:
             - deploy_to_env

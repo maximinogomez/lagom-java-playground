@@ -120,14 +120,12 @@ def main():
 
             was_triggered_successful = trigger_ci_deploy_job(env_name)
             if was_triggered_successful:
-                time.sleep(20)
-
                 print('***** Start API status checks deployed at [ {0} ]'.format(env_host_url))
 
+                time.sleep(120)
                 start_api_checks(env_host_url, expected_build_number)
 
                 print('***** End API status checks.')
-
             else:
                 print('--- API status checks did not ran due to errors when triggering the remote jenkins job!')
         else:

@@ -65,4 +65,4 @@ workflows:
     jobs:
       - build
       - deploy_to_env
-      - test_deployed_api
+      - test_deployed_apis

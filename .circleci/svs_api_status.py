@@ -35,9 +35,9 @@ def get_api_status(endpoint):
             api_response_values["artifact"] = response_payload['build']['artifact']
             api_response_values["buildNumber"] = response_payload['build']['buildNumber']
         else:
-            print('----- Endpoint: {0} ==> Status: {1}'.format(endpoint, response.status_code))
+            print('--- Endpoint: {0} ==> Status: {1}'.format(endpoint, response.status_code))
     except Exception as x:
-        print('----- Request failed! endpoint: {0}', format(endpoint))
+        print('--- Request failed! endpoint: {0}'.format(endpoint))
     return api_response_values
 
 
@@ -48,87 +48,84 @@ def start_api_checks(host_url, expected_build_number):
         api_response_values = get_api_status(host_url + v)
 
         if 'buildNumber' in api_response_values:
-            print('----- Endpoint: {0} \nStatus: {1}'
+            print('--- Endpoint: {0} \nStatus: {1}'
                   .format(host_url, api_response_values['code']))
-            print('----- Artifact: {0} \nBuildNumber: {1}'
+            print('--- Artifact: {0} \nBuildNumber: {1}'
                   .format(api_response_values['artifact'], api_response_values['buildNumber']))
 
             actual_build_number = api_response_values['buildNumber'][0:10]
             if actual_build_number == expected_build_number:
-                print('----- Expected build number [{0}] DID matched actual build number [{1}]'
+                print('--- Expected build number [{0}] DID matched actual build number [{1}]'
                       .format(expected_build_number, actual_build_number))
             else:
-                sys.exit('----- Expected build number [{0}] DID NOT matched actual build number [{1}]'
+                sys.exit('--- Expected build number [{0}] DID NOT matched actual build number [{1}]'
                          .format(expected_build_number, actual_build_number))
         else:
-            print('----- Response did not have a build number for Endpoint: {0} \nStatus: {1}'
+            print('--- Response did not have a build number for Endpoint: {0} \nStatus: {1}'
                   .format(host_url + v, api_response_values['code']))
     print('*** End API status checks ***')
 
 
-def trigger_ci_engage_deploy_job(env_name):
-    target_urls = {
-        'plat': 'https://jenkins.pivotusventures.com/jenkins/job/Engage-Deploy-Plat/build'
+def trigger_ci_deploy_job(env_name):
+    env_name_to_build_url = {
+        'plat': 'https://jenkins.pivotusventures.com/jenkins/job/Engage-Deploy-Plat/build',
+        'dev': 'https://jenkins.pivotusventures.com/jenkins/job/Engage-Deploy-Dev/build'
     }
 
-    jenkins_username = 'maximinogomez'  # Change me!
-    jenkins_password = 'c30e09bc41d4b026d4fee885f95d9a6b'  # Change me!
+    # Change me! to dev jenkins values
+    jenkins_username = 'maximinogomez'
+    jenkins_password = 'c30e09bc41d4b026d4fee885f95d9a6b'
 
-    is_successful = False
-    if env_name in target_urls and env_name == 'plat':
-        try:
-            target_url = target_urls[env_name]
-            response = requests_retry_session().post(target_url, auth=(jenkins_username, jenkins_password))
+    # Initially only to plat environment
+    if env_name in env_name_to_build_url and env_name == 'plat':
+        response = requests_retry_session() \
+            .post(env_name_to_build_url[env_name], auth=(jenkins_username, jenkins_password))
 
-            if response.status_code == 201:
-                print('----- Remote jenkins job response status: {0}'.format(response.status_code))
-                is_successful = True
-            else:
-                print('----- Remote jenkins job response status: {0}'.format(response.status_code))
-                has_errors = False
-        except Exception as x:
-            print('----- Request failed!')
-            has_errors = False
+        if response.status_code == 201:
+            print('--- Remote jenkins job response status: {0}'.format(response.status_code))
+            return True
+        else:
+            print('--- Remote jenkins job response status: {0}'.format(response.status_code))
+            return False
     else:
-        print('----- Remote jenkins deploy job not allow for env name: {0}'.format(env_name))
-        has_errors = False
-    return has_errors
+        print('--- Remote jenkins deploy job not allow for env name: {0}'.format(env_name))
+        return False
 
 
 def get_env_host_url(env_name):
-    environments = {
+    env_name_to_host_url = {
         'plat': 'https://pivotus.plat.engage.pivotus.io',
-        # 'dev': 'https://pivotus.dev.engage.pivotus.io'
+        'dev': 'https://pivotus.dev.engage.pivotus.io'
     }
-    return environments[env_name] if env_name in environments else ''
-
-
-def to_env_name(env_tag):
-    return (env_tag[len('env-'):]).lower() if env_tag.lower().startswith('env-') else ''
+    return env_name_to_host_url[env_name] if env_name in env_name_to_host_url else ""
 
 
 def main():
+    # For now, plat only
     accepted_env_tags = {'ENV-PLAT'}
 
     if 'CIRCLE_TAG' in os.environ and os.environ['CIRCLE_TAG'] in accepted_env_tags:
-        env_name = to_env_name(os.environ['CIRCLE_TAG'])
+        env_tag = os.environ['CIRCLE_TAG']
         expected_build_number = os.environ['CIRCLE_SHA1'][0:10]
+
+        # Trim the env name from tag(env-plat) if it exists
+        env_name = (env_tag[len('env-'):]).lower() if env_tag.lower().startswith('env-') else ""
 
         env_host_url = get_env_host_url(env_name)
 
-        if env_host_url == '':
-            print('No host url found for env name: {0}'.format(env_name))
-        else:
-            print("----- Env name : {0}".format(env_name))
-            print("----- Expected build number : {0}".format(expected_build_number))
-            print("----- Env host URL : {0}".format(env_host_url))
+        if env_host_url:
+            print("--- Env name : {0}".format(env_name))
+            print("--- Expected build number : {0}".format(expected_build_number))
+            print("--- Env host URL : {0}".format(env_host_url))
 
-            was_trigger_successful = trigger_ci_engage_deploy_job(env_name)
-            if was_trigger_successful:
+            was_triggered_successful = trigger_ci_deploy_job(env_name)
+            if was_triggered_successful:
                 time.sleep(10)
                 start_api_checks(env_host_url, expected_build_number)
             else:
-                print('----- API Status Checks did not ran due to errors when triggering remote jenkins deploy job!')
+                print('--- API status checks did not ran due to errors when triggering the remote jenkins job!')
+        else:
+            print('--- No host URL found for env name: {0}'.format(env_name))
 
 
 if __name__ == '__main__':

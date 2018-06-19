@@ -45,9 +45,9 @@ def get_api_status(endpoint):
             api_response_values["artifact"] = response_payload['build']['artifact']
             api_response_values["buildNumber"] = response_payload['build']['buildNumber']
         else:
-            print('--- Endpoint: {0} ==> Status: {1}'.format(endpoint, response.status_code))
-    except Exception as x:
-        print('--- Request failed! endpoint: {0}'.format(endpoint))
+            print('----- Request failed! endpoint: {0} status: {1}'.format(endpoint, response.status_code))
+    except Exception as e:
+        print('----- Error: when calling endpoint: {0}, message: {1}'.format(endpoint, str(e)))
     return api_response_values
 
 

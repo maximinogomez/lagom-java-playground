@@ -63,7 +63,12 @@ workflows:
   version: 2
   build_deploy_test:
     jobs:
-      - build
+      - build:
+          filters:
+            branches:
+              only: no-branch
+            tags:
+              only: /ENV-(?:PLAT1|DEV)$
       - deploy_to_env:
           filters:
             branches:
@@ -75,4 +80,4 @@ workflows:
             branches:
               only: no-branch
             tags:
-              only: /ENV-(?:PLAT1|DEV)$
+              only: /ENV-.*/

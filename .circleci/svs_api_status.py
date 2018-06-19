@@ -59,7 +59,7 @@ def start_api_checks(host_url, expected_build_number):
                 print('----- Expected build number [{0}] DID matched response build number [{1}]'
                       .format(expected_build_number, actual_build_number))
             else:
-                sys.exit('--- Expected build number [{0}] DID NOT matched response build number [{1}]'
+                sys.exit('----- Expected build number [{0}] DID NOT matched response build number [{1}]'
                          .format(expected_build_number, actual_build_number))
         else:
             print('----- Response did not have a build number for endpoint: {0} Status: {1}'
@@ -79,6 +79,8 @@ def trigger_ci_deploy_job(env_name):
 
     # Initially only to plat environment
     if env_name in env_name_to_build_url and env_name == 'plat':
+        print('***** Initiate jenkins deploy job [ {0} ]'.format(env_name_to_build_url[env_name]))
+
         response = requests_retry_session() \
             .post(env_name_to_build_url[env_name], auth=(jenkins_username, jenkins_password))
 

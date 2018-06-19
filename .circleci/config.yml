@@ -80,4 +80,4 @@ workflows:
             branches:
               only: no-branch
             tags:
-              only: /ENV-.*/
+              only: /ENV-(?:PLAT1|DEV)/

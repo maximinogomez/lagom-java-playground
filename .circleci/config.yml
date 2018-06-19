@@ -27,6 +27,20 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths: "."
+
+  deploy_to_env:
+      working_directory: ~/repo
+      docker:
+        - image: circleci/python:3.6.1
+          environment:
+                MAVEN_OPTS: "-Xms1024m -Xmx1024m"
+      steps:
+        - checkout
+        - run:
+            name: deploy to env status
+            command: |
+              python .circleci/svs_api_status.py
+
   apitest:
     docker:
       - image: circleci/openjdk:8-jdk
@@ -35,15 +49,6 @@ jobs:
       MAVEN_OPTS: -Xmx3200m
     steps:
       - checkout
-      - run:
-          command: |
-            sudo apt-get update
-            sudo apt-get -y upgrade
-            sudo apt-get install python-pip
-            pip --version
-            sudo pip install requests
-            export CIRCLE_TAG="ENV-PLAT"
-            python .circleci/svs_api_status.py
       - run:
           name: clone api-integration-tests
           command: |
@@ -71,6 +76,9 @@ workflows:
   build_test:
     jobs:
       - build
+      - deploy_to_env:
+          requires:
+            - build
       - apitest:
           requires:
             - build

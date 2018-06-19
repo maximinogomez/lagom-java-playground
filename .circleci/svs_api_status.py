@@ -16,6 +16,16 @@ API_STATUS_PATHS = {
     'conversations': '/api/conversations/status'
 }
 
+ENGAGE_ENVIRONMENTS = {
+    'dev': 'https://pivotus.dev.engage.pivotus.io',
+    'plat': 'https://pivotus.plat.engage.pivotus.io'
+}
+
+ENGAGE_DEPLOY_JOBS = {
+    'dev': 'https://jenkins.pivotusventures.com/jenkins/job/Engage-Deploy-Dev/build',
+    'plat': 'https://jenkins.pivotusventures.com/jenkins/job/Engage-Deploy-Plat/build'
+}
+
 
 def requests_retry_session():
     session = requests.Session()
@@ -68,21 +78,16 @@ def start_api_checks(host_url, expected_build_number):
 
 
 def trigger_ci_deploy_job(env_name):
-    env_name_to_build_url = {
-        'plat': 'https://jenkins.pivotusventures.com/jenkins/job/Engage-Deploy-Plat/build',
-        'dev': 'https://jenkins.pivotusventures.com/jenkins/job/Engage-Deploy-Dev/build'
-    }
-
     # Change me! to dev jenkins values
     jenkins_username = 'maximinogomez'
     jenkins_password = 'c30e09bc41d4b026d4fee885f95d9a6b'
 
     # Initially only to plat environment
-    if env_name in env_name_to_build_url and env_name == 'plat':
-        print('***** Initiate jenkins deploy job [ {0} ]'.format(env_name_to_build_url[env_name]))
+    if env_name in ENGAGE_DEPLOY_JOBS and env_name == 'plat':
+        print('***** Initiate jenkins deploy job [ {0} ]'.format(ENGAGE_DEPLOY_JOBS[env_name]))
 
         response = requests_retry_session() \
-            .post(env_name_to_build_url[env_name], auth=(jenkins_username, jenkins_password))
+            .post(ENGAGE_DEPLOY_JOBS[env_name], auth=(jenkins_username, jenkins_password))
 
         if response.status_code == 201:
             print('----- Remote jenkins job response status: {0}'.format(response.status_code))
@@ -96,15 +101,11 @@ def trigger_ci_deploy_job(env_name):
 
 
 def get_env_host_url(env_name):
-    env_name_to_host_url = {
-        'plat': 'https://pivotus.plat.engage.pivotus.io',
-        'dev': 'https://pivotus.dev.engage.pivotus.io'
-    }
-    return env_name_to_host_url[env_name] if env_name in env_name_to_host_url else ""
+    return ENGAGE_ENVIRONMENTS[env_name] if env_name in ENGAGE_ENVIRONMENTS else ""
 
 
 def main():
-    # For now, plat only
+    # For now, PLAT only
     accepted_env_tags = {'ENV-PLAT'}
 
     if 'CIRCLE_TAG' in os.environ and os.environ['CIRCLE_TAG'] in accepted_env_tags:

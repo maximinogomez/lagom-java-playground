@@ -68,16 +68,20 @@ workflows:
             branches:
               only: no-branch
             tags:
-              only: /ENV-(?:PLAT1|DEV)$
+              only: /ENV-.*/
       - deploy_to_env:
+          requires:
+            - build
           filters:
             branches:
               only: no-branch
             tags:
-              only: /ENV-(?:PLAT1|DEV)$
+              only: /ENV-(?:PLAT|DEV)/
       - test_deployed_apis:
+          requires:
+            - deploy_to_env
           filters:
             branches:
               only: no-branch
             tags:
-              only: /ENV-(?:PLAT1|DEV)/
+              only: /ENV-(?:PLAT|DEV)/
